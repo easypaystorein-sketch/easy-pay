@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # ElectroQist UAE
 
 Next.js 14 App Router e-commerce starter for an October 2026 UAE catalogue.
@@ -31,3 +32,6 @@ Seed credentials: `admin@electroqist.ae` / `changeme123`. Change this immediatel
 ## Payments limitation
 
 Stripe creates a test PaymentIntent when `STRIPE_SECRET_KEY` is present. The checkout UI currently records the order and returns its tracking page; production should add Stripe Elements confirmation and webhook-driven order status updates before accepting live funds. Tabby is intentionally an adapter/stub with a development mock approval and TODO for the production API/callback contract.
+=======
+# easy-pay
+>>>>>>> origin/main
