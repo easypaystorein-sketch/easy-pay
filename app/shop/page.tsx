@@ -1,0 +1,4 @@
+import { prisma } from "@/lib/prisma";
+import Link from "next/link";
+export const dynamic = "force-dynamic";
+export default async function Shop() { const products = await prisma.product.findMany({ include: { category: true }, orderBy: { createdAt: "asc" } }); return <main className="mx-auto max-w-7xl px-5 py-12"><h1 className="text-4xl font-black">Shop the collection</h1><p className="mt-3 text-white/60">October 2026 UAE catalogue · delivery from AED 20, free over AED 250.</p><div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">{products.map((p: (typeof products)[number]) => <Link href={`/products/${p.slug}`} key={p.id} className="glass rounded-2xl p-4"><div className="flex h-40 items-center justify-center rounded-xl bg-white/5 text-4xl">◈</div><div className="mt-4 text-xs uppercase text-gold">{p.category.name}</div><h2 className="mt-1 font-bold">{p.name}</h2><p className="mt-2 text-gold">AED {Number(p.price).toFixed(2)}</p></Link>)}</div></main>; }

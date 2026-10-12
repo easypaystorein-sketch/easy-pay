@@ -1,0 +1,6 @@
+"use client";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
+export type CartItem = { id: string; name: string; price: number; quantity: number; imageUrl?: string | null };
+const Ctx = createContext<{ items: CartItem[]; count: number; add: (item: Omit<CartItem, "quantity">) => void; remove: (id: string) => void; clear: () => void }>({ items: [], count: 0, add: () => {}, remove: () => {}, clear: () => {} });
+export function CartProvider({ children }: { children: React.ReactNode }) { const [items, setItems] = useState<CartItem[]>([]); useEffect(() => { const raw = localStorage.getItem("electroqist-cart"); if (raw) setItems(JSON.parse(raw)); }, []); useEffect(() => localStorage.setItem("electroqist-cart", JSON.stringify(items)), [items]); const value = useMemo(() => ({ items, count: items.reduce((n, i) => n + i.quantity, 0), add: (item: Omit<CartItem, "quantity">) => setItems((old) => { const found = old.find((i) => i.id === item.id); return found ? old.map((i) => i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i) : [...old, { ...item, quantity: 1 }]; }), remove: (id: string) => setItems((old) => old.filter((i) => i.id !== id)), clear: () => setItems([]) }), [items]); return <Ctx.Provider value={value}>{children}</Ctx.Provider>; }
+export const useCart = () => useContext(Ctx);
