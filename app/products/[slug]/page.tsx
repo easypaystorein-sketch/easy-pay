@@ -1,5 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import AddToCart from "@/components/AddToCart";
+
 export const dynamic = "force-dynamic";
-export default async function ProductPage({ params }: { params: { slug: string } }) { const p = await prisma.product.findUnique({ where: { slug: params.slug }, include: { category: true } }); if (!p) notFound(); return <main className="mx-auto grid max-w-6xl gap-10 px-5 py-16 md:grid-cols-2"><div className="flex min-h-[420px] items-center justify-center rounded-3xl bg-white/5 text-8xl">◈</div><div><div className="text-sm uppercase text-gold">{p.category.name}</div><h1 className="mt-3 text-5xl font-black">{p.name}</h1><p className="mt-6 text-lg text-white/70">{p.description}</p><p className="my-8 text-3xl font-bold text-gold">AED {Number(p.price).toFixed(2)}</p><AddToCart product={{ id: p.id, name: p.name, price: Number(p.price), imageUrl: p.imageUrl }} /><p className="mt-5 text-sm text-white/50">{p.stock > 0 ? `${p.stock} in stock · UAE delivery available` : "Currently unavailable"}</p></div></main>; }
+
+export default async function ProductPage({ params }: { params: { slug: string } }) {
+  const p = await prisma.product.findUnique({ where: { slug: params.slug }, include: { category: true } });
+  if (!p) notFound();
+  return <main className="detail-shell"><div className="detail-image">{p.imageUrl ? <img src={p.imageUrl} alt={p.name} onError={(event) => { event.currentTarget.style.display = "none"; }} /> : <div className="product-placeholder">◈</div>}</div><div className="detail-copy"><div className="eyebrow text-teal">{p.category.name}</div><h1>{p.name}</h1><p className="detail-description">{p.description}</p><p className="detail-price">AED {Number(p.price).toLocaleString("en-AE")}</p><AddToCart product={{ id: p.id, name: p.name, price: Number(p.price), imageUrl: p.imageUrl }} /><p className="mt-5 text-sm text-white/45">{p.stock > 0 ? `${p.stock} in stock · UAE delivery available` : "Currently unavailable"}</p></div></main>;
+}

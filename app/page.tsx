@@ -1,4 +1,20 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import Hero from "@/components/Hero";
+import ProductCard from "@/components/ProductCard";
+
 export const dynamic = "force-dynamic";
-export default async function Home() { const products = await prisma.product.findMany({ where: { featured: true }, take: 3 }); return <main><section className="mx-auto grid max-w-7xl gap-10 px-5 py-20 md:grid-cols-2 md:items-center"><div><p className="mb-4 text-sm uppercase tracking-[.3em] text-gold">Electronics, elevated</p><h1 className="text-5xl font-black leading-tight md:text-7xl">Tech that fits your <span className="text-gold">life.</span></h1><p className="mt-6 max-w-xl text-lg text-white/70">Curated devices, transparent UAE delivery, and payment options made for your pace.</p><Link className="btn btn-gold mt-8" href="/shop">Explore the collection</Link></div><div className="glass rounded-3xl p-8 shadow-glass"><div className="text-sm text-gold">OCTOBER 2026 EDIT</div><div className="mt-12 text-6xl font-black">10<span className="text-gold">.</span></div><p className="mt-4 text-white/70">Precisely chosen products. No noise, no dead links.</p></div></section><section className="mx-auto max-w-7xl px-5 pb-20"><h2 className="mb-6 text-2xl font-bold">Featured now</h2><div className="grid gap-5 md:grid-cols-3">{products.map((p: (typeof products)[number]) => <Link key={p.id} href={`/products/${p.slug}`} className="glass rounded-2xl p-5 hover:border-gold"><div className="flex h-44 items-center justify-center rounded-xl bg-white/5 text-5xl">◈</div><h3 className="mt-4 font-bold">{p.name}</h3><p className="mt-2 text-gold">AED {Number(p.price).toFixed(2)}</p></Link>)}</div></section></main>; }
+
+export default async function Home() {
+  const products = await prisma.product.findMany({ where: { featured: true }, include: { category: true }, orderBy: { createdAt: "asc" } });
+  return (
+    <main>
+      <Hero imageUrl={products[0]?.imageUrl} />
+      <section className="section-shell">
+        <div className="section-heading"><div><p className="eyebrow text-teal">THE EDIT</p><h2>Made for the way<br /><span>you move.</span></h2></div><Link href="/shop" className="text-sm font-bold text-gold transition hover:text-white">View all products ↗</Link></div>
+        <div className="product-grid">{products.map((product, index) => <ProductCard key={product.id} product={product} index={index} />)}</div>
+      </section>
+      <section className="split-banner"><div><p className="eyebrow text-teal">PAY YOUR WAY</p><h2>Good tech.<br /><span>Better timing.</span></h2></div><p className="max-w-md text-white/65">From cards to flexible instalments, checkout is designed around your pace. Fast UAE delivery is included on every order over AED 250.</p></section>
+    </main>
+  );
+}
